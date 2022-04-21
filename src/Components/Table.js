@@ -1,15 +1,24 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 // import AppContext from '../Context/AppContext';
+import AppContext from '../Context/AppContext';
 import requisitAPI from './requisitAPI';
 
 function Table() {
 //   const { data } = useContext(AppContext);
+  const { input: { filterByName: { name } } } = useContext(AppContext);
+  const [filt, setFilt] = useState([]);
   const result = requisitAPI();
-  console.log(result);
+
+  useEffect(() => {
+    const filtResult = name.length === 0 ? result : result.filter((e) => (
+      e.name.indexOf(name) >= 0
+    ));
+    setFilt(filtResult);
+  }, [name, result]);
 
   return (
     <div>
-      {result !== undefined ? (
+      {filt !== [] ? (
         <table>
           <tr>
             <th>Name</th>
@@ -26,7 +35,7 @@ function Table() {
             <th>Edited</th>
             <th>URL</th>
           </tr>
-          { result.map((planet, planetI) => (
+          { filt.map((planet, planetI) => (
             <tr key={ planetI }>
               <td>{ planet.name }</td>
               <td>{ planet.rotation_period }</td>

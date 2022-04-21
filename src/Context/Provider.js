@@ -3,10 +3,14 @@ import React, { useState } from 'react';
 import AppContext from './AppContext';
 
 function Provider({ children }) {
-  const [data, setData] = useState('vazio');
+  const [input, setInput] = useState({
+    filterByName: {
+      name: '',
+    },
+  });
   const contextValue = {
-    data,
-    setData,
+    input,
+    setInput,
   };
 
   return (
