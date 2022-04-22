@@ -8,9 +8,12 @@ function Provider({ children }) {
       name: '',
     },
   });
+  const [filter, setFilter] = useState('');
   const contextValue = {
     input,
     setInput,
+    filter,
+    setFilter,
   };
 
   return (

@@ -5,16 +5,29 @@ import requisitAPI from './requisitAPI';
 
 function Table() {
 //   const { data } = useContext(AppContext);
-  const { input: { filterByName: { name } } } = useContext(AppContext);
+  const { input: { filterByName: { name } }, filter } = useContext(AppContext);
   const [filt, setFilt] = useState([]);
   const result = requisitAPI();
 
   useEffect(() => {
-    const filtResult = name.length === 0 ? result : result.filter((e) => (
-      e.name.indexOf(name) >= 0
-    ));
-    setFilt(filtResult);
-  }, [name, result]);
+    const filtResultName = name.length === 0 && filter === ''
+      ? (result) : (result.filter((e) => (
+        e.name.indexOf(name) >= 0
+      )));
+    // console.log(filtResultName, 'all');
+    const filtResultFilt = filter === '' ? filtResultName : filtResultName.filter((e) => {
+      const { filterByNumericValues } = filter;
+      const { column, comparison, value } = filterByNumericValues[0];
+      if (comparison === 'maior que') {
+        return parseInt(e[column], 10) > parseInt(value, 10);
+      }
+      if (comparison === 'menor que') {
+        return parseInt(e[column], 10) < parseInt(value, 10);
+      }
+      return e[column] === value;
+    });
+    setFilt(filtResultFilt);
+  }, [name, result, filter]);
 
   return (
     <div>
