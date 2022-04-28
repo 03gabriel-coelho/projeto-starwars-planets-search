@@ -2,7 +2,10 @@ import React, { useState, useContext } from 'react';
 import AppContext from '../Context/AppContext';
 
 function FiltroNumber() {
-  const { setFilter } = useContext(AppContext);
+  const { setFilter, filter } = useContext(AppContext);
+  const [options, setOptions] = useState(
+    ['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'],
+  );
   const [column, setColumn] = useState('population');
   const [comparison, setComparison] = useState('maior que');
   const [value, setValue] = useState(0);
@@ -14,12 +17,24 @@ function FiltroNumber() {
   }
 
   function insertValues() {
-    setFilter({
-      filterByNumericValues: [{
-        column,
-        comparison,
-        value }],
-    });
+    const { filterByNumericValues } = filter;
+    console.log(filterByNumericValues, 'numeric aqui');
+    setOptions(options.filter((param) => param !== column));
+    if (filterByNumericValues !== undefined) {
+      setFilter({
+        filterByNumericValues: [...filterByNumericValues, {
+          column,
+          comparison,
+          value }],
+      });
+    } else {
+      setFilter({
+        filterByNumericValues: [{
+          column,
+          comparison,
+          value }],
+      });
+    }
   }
 
   return (
@@ -30,11 +45,9 @@ function FiltroNumber() {
         onChange={ defineValues }
         value={ column }
       >
-        <option name="population">population</option>
-        <option name="orbital_period">orbital_period</option>
-        <option name="diameter">diameter</option>
-        <option name="rotation_period">rotation_period</option>
-        <option name="surface_water">surface_water</option>
+        {options.map((option) => (
+          <option name={ option } key={ option }>{option}</option>
+        ))}
       </select>
       <select
         data-testid="comparison-filter"
@@ -56,7 +69,7 @@ function FiltroNumber() {
       <button
         type="button"
         data-testid="button-filter"
-        onClick={ insertValues }
+        onClick={ () => insertValues() }
       >
         Filtrar
 

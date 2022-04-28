@@ -6,27 +6,39 @@ import requisitAPI from './requisitAPI';
 function Table() {
 //   const { data } = useContext(AppContext);
   const { input: { filterByName: { name } }, filter } = useContext(AppContext);
+  console.log(filter);
   const [filt, setFilt] = useState([]);
   const result = requisitAPI();
 
   useEffect(() => {
+    const { filterByNumericValues } = filter;
+
     const filtResultName = name.length === 0 && filter === ''
       ? (result) : (result.filter((e) => (
         e.name.indexOf(name) >= 0
       )));
-    // console.log(filtResultName, 'all');
-    const filtResultFilt = filter === '' ? filtResultName : filtResultName.filter((e) => {
-      const { filterByNumericValues } = filter;
-      const { column, comparison, value } = filterByNumericValues[0];
-      if (comparison === 'maior que') {
-        return parseInt(e[column], 10) > parseInt(value, 10);
-      }
-      if (comparison === 'menor que') {
-        return parseInt(e[column], 10) < parseInt(value, 10);
-      }
-      return e[column] === value;
-    });
-    setFilt(filtResultFilt);
+
+    const filtResultFilt = filter === '' ? filtResultName : filterByNumericValues
+      .map((values) => {
+        const { column, comparison, value } = values;
+        const resul = filtResultName.filter((planet) => {
+          if (comparison === 'maior que') {
+            return parseInt(planet[column], 10) > parseInt(value, 10);
+          }
+          if (comparison === 'menor que') {
+            return parseInt(planet[column], 10) < parseInt(value, 10);
+          }
+          return planet[column] === value;
+        });
+        return resul;
+      });
+    console.log([...filtResultFilt], 'filt resulttttt');
+
+    if (filter === '') {
+      setFilt(filtResultFilt);
+    } else {
+      setFilt(filtResultFilt[0]);
+    }
   }, [name, result, filter]);
 
   return (
