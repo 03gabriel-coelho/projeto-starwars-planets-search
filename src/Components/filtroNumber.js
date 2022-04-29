@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import AppContext from '../Context/AppContext';
 
 function FiltroNumber() {
-  const { setFilter, filter } = useContext(AppContext);
+  const { setFilter, filter, setOneFilter } = useContext(AppContext);
   const [options, setOptions] = useState(
     ['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'],
   );
@@ -18,15 +18,20 @@ function FiltroNumber() {
 
   function insertValues() {
     const { filterByNumericValues } = filter;
-    console.log(filterByNumericValues, 'numeric aqui');
     setOptions(options.filter((param) => param !== column));
-    if (filterByNumericValues !== undefined) {
+    // Consertar isso aquiiiiiiiii
+    console.log(filterByNumericValues[0], 'numerics value aqui');
+    if (filterByNumericValues[0].column !== '') {
       setFilter({
         filterByNumericValues: [...filterByNumericValues, {
           column,
           comparison,
           value }],
       });
+      setOneFilter({
+        column,
+        comparison,
+        value });
     } else {
       setFilter({
         filterByNumericValues: [{
@@ -34,6 +39,10 @@ function FiltroNumber() {
           comparison,
           value }],
       });
+      setOneFilter({
+        column,
+        comparison,
+        value });
     }
   }
 

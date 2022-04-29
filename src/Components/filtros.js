@@ -6,7 +6,7 @@ function Filtros() {
   const { filterByNumericValues } = filter;
   return (
     <div>
-      { filter !== '' ? (
+      { filter.length !== 0 ? (
         filterByNumericValues.map((element, key) => (
           <p
             key={ key }

@@ -1,49 +1,49 @@
 import React, { useContext, useEffect, useState } from 'react';
 // import AppContext from '../Context/AppContext';
 import AppContext from '../Context/AppContext';
-import requisitAPI from './requisitAPI';
 
 function Table() {
-//   const { data } = useContext(AppContext);
-  const { input: { filterByName: { name } }, filter } = useContext(AppContext);
-  console.log(filter);
-  const [filt, setFilt] = useState([]);
-  const result = requisitAPI();
+  const [filtered, setFiltered] = useState([]);
+  const { input: { filterByName: { name } },
+    filter: { filterByNumericValues }, data, oneFilter } = useContext(AppContext);
+
+  console.log(filterByNumericValues, 'filter');
+  console.log(name, 'name');
+  console.log(data, 'resultApi');
+  console.log(oneFilter, 'oneFilter');
+  console.log(filtered, 'filtered');
 
   useEffect(() => {
-    const { filterByNumericValues } = filter;
-
-    const filtResultName = name.length === 0 && filter === ''
-      ? (result) : (result.filter((e) => (
-        e.name.indexOf(name) >= 0
-      )));
-
-    const filtResultFilt = filter === '' ? filtResultName : filterByNumericValues
-      .map((values) => {
-        const { column, comparison, value } = values;
-        const resul = filtResultName.filter((planet) => {
-          if (comparison === 'maior que') {
-            return parseInt(planet[column], 10) > parseInt(value, 10);
-          }
-          if (comparison === 'menor que') {
-            return parseInt(planet[column], 10) < parseInt(value, 10);
-          }
-          return planet[column] === value;
-        });
-        return resul;
+    const setFilter = (valueAFilter) => {
+      const { column, comparison, value } = oneFilter;
+      const resultFilter = valueAFilter.filter((element) => {
+        if (comparison === 'maior que') {
+          return Number(element[column]) > Number(value);
+        }
+        if (comparison === 'menor que') {
+          return Number(element[column]) < Number(value);
+        }
+        return Number(element[column]) === Number(value);
       });
-    console.log([...filtResultFilt], 'filt resulttttt');
+      setFiltered(resultFilter);
+    };
 
-    if (filter === '') {
-      setFilt(filtResultFilt);
+    if (filterByNumericValues.length === 1) {
+      setFilter(data);
     } else {
-      setFilt(filtResultFilt[0]);
+      setFilter(filtered);
     }
-  }, [name, result, filter]);
+  }, [oneFilter]);
+
+  const insertMap = filtered.length !== 0 ? filtered : data;
+
+  const insertMapResult = name.length === 0 ? insertMap : (
+    insertMap.filter((e) => (e.name.indexOf(name) >= 0))
+  );
 
   return (
     <div>
-      {filt !== [] ? (
+      { data !== [] ? (
         <table>
           <tr>
             <th>Name</th>
@@ -60,7 +60,7 @@ function Table() {
             <th>Edited</th>
             <th>URL</th>
           </tr>
-          { filt.map((planet, planetI) => (
+          { insertMapResult.map((planet, planetI) => (
             <tr key={ planetI }>
               <td>{ planet.name }</td>
               <td>{ planet.rotation_period }</td>
